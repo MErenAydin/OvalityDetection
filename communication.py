@@ -4,7 +4,6 @@ import socket
 import cv2
 import struct
 
-
 class Transmitter(Thread):
     def __init__(self,HOST,PORT):
         """HOST: str PORT: int"""
