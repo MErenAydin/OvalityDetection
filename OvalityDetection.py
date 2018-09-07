@@ -4,14 +4,17 @@ from videoCapture import VideoCapture
 from communication import Transmitter
 import time
 
+HOST = "localhost"
+PORT = 8000
+
 # Creating transmitter object for transmit image from TCP socket
-transmitter = Transmitter("localhost", 8000)
+transmitter = Transmitter(HOST, PORT)
 
 # Starting video capturing
 cap = cv2.VideoCapture("videoplayback_2.avi")
+
 # Uncomment for starting camera capturing
 #cap = VideoCapture(0, resolution = (800,600))
-
 
 def create_mask(img,thickness):
     """function for creating mask to delete unused areas at frame"""
@@ -61,7 +64,7 @@ def distance(a, b):
     return np.sqrt((a[0]-b[0])**2 + (a[1]- b[1])**2)
 
 
-
+# Counter for calculating mean of centers
 q = 0
 centers = []
 
@@ -76,6 +79,8 @@ while(cap.isOpened()):
 
         
         img = frame.copy()
+        # Flip image vertically
+        img = cv2.flip(img, 1)
         # Convert image's color space to grayscale
         img = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
 

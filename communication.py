@@ -5,7 +5,7 @@ import cv2
 import struct
 
 class Transmitter(Thread):
-    def __init__(self,HOST,PORT):
+    def __init__(self,HOST = "", PORT = 0):
         """HOST: str PORT: int"""
         Thread.__init__(self)
         self.address = (HOST,PORT)
@@ -37,12 +37,13 @@ class Transmitter(Thread):
 
 
 class Reciever(Thread):
-    def __init__(self, HOST, PORT):
+    def __init__(self, HOST = "", PORT = 0):
         """HOST: str PORT: int"""
         Thread.__init__(self)
         self.address = (HOST,PORT)
         self.socket = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
-        self.socket.connect(self.address)
+        if HOST != "" and PORT != 0:
+            self.socket.connect(self.address)
 
     def recv_image(self):
         """Recieves OpenCV image over web socket connection"""
