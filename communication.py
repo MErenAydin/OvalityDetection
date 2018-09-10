@@ -10,9 +10,14 @@ class Transmitter(Thread):
         Thread.__init__(self)
         self.address = (HOST,PORT)
         self.socket = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
-        self.socket.bind(self.address)
-        self.socket.listen(1)
-        self.con,add = self.socket.accept()
+        try:
+            self.socket.bind(self.address)
+            self.socket.listen(1)
+            self.con,add = self.socket.accept()
+            self.connected = True
+        except Exception as e:
+            print(e)
+            self.connected = False
 
     def send_image(self, img):
         """Sends OpenCV image over web socket connection"""
@@ -33,7 +38,26 @@ class Transmitter(Thread):
 
         except Exception as e:
             self.con.close()
+            self.connected = False
             raise ConnectionAbortedError("Transmitter Error: " + str(e) + " Connection Aborted!!!")
+    
+    def send_data(self, data):
+        """Sends data over web socket connection"""
+        try: 
+            packed_data = struct.pack('!f', int(data))
+            self.con.send(packed_data);
+        except Exception as e:
+            self.con.close()
+            self.connected = False
+            raise ConnectionAbortedError("Transmitter Error: " + str(e) + " Connection Aborted!!!")
+    
+    def reconnect(self):
+        self.socket.close()
+        self.socket = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+        self.socket.bind(self.address)
+        self.socket.listen(1)
+        self.con,add = self.socket.accept()
+        self.connected = True
 
 
 class Reciever(Thread):
@@ -41,9 +65,15 @@ class Reciever(Thread):
         """HOST: str PORT: int"""
         Thread.__init__(self)
         self.address = (HOST,PORT)
+        self.connected = False
         self.socket = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
         if HOST != "" and PORT != 0:
-            self.socket.connect(self.address)
+            try:
+                self.socket.connect(self.address)
+                self.connected = True
+            except Exception as e:
+                print(e)
+                self.connected = False
 
     def recv_image(self):
         """Recieves OpenCV image over web socket connection"""
@@ -85,4 +115,15 @@ class Reciever(Thread):
         
         except Exception as e:
             print("Reciever Error:\n" +str(e))
+            self.connected = False
+            raise ConnectionAbortedError("Transmitter Error: " + str(e) + " Connection Aborted!!!")
+    
+    def recv_data(self):
+        try:
+            data = self.socket.recv(4)
+            data = struct.unpack('!f', data)[0]
+            return data
+        except Exception as e:
+            print("Reciever Error:\n" +str(e))
+            self.connected = False
             raise ConnectionAbortedError("Transmitter Error: " + str(e) + " Connection Aborted!!!")
