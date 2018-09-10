@@ -44,7 +44,7 @@ class Transmitter(Thread):
     def send_data(self, data):
         """Sends data over web socket connection"""
         try: 
-            packed_data = struct.pack('!f', int(data))
+            packed_data = struct.pack('!f', data)
             self.con.send(packed_data);
         except Exception as e:
             self.con.close()

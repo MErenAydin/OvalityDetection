@@ -29,7 +29,7 @@ class GUI():
         self.disconnectButton = tk.Button(self.inputFrame, text = "Disconnect", command = self.disconnect_click)
         self.HOSTLabel = tk.Label(self.inputFrame,text = "Host: ")
         self.PORTLabel = tk.Label(self.inputFrame,text = "Port: ")
-        self.distortionLabel = tk.Label(self.inputFrame, text = "Distortion: %" )
+        self.distortionLabel = tk.Label(self.inputFrame, text = "Distortion:" )
         self.distValLabel = tk.Label(self.inputFrame, textvariable = self.distvar)
         self.HOST = tk.Entry(self.inputFrame, textvariable = self.hostvar)
         self.PORT = tk.Entry(self.inputFrame, textvariable = self.portvar)
@@ -62,8 +62,8 @@ class GUI():
             if self.reciever.connected:
                 img = self.reciever.recv_image()
                 data = self.reciever.recv_data()
-                print(data)
-                self.distvar.set(str(data))
+                data = "% {0:0.2f}".format(float(data))
+                self.distvar.set(data)
             else:
                 img = np.zeros((600, 800, 1),np.uint8)
                 img = cv2.flip(img,1)

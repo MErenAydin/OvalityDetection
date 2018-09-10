@@ -12,10 +12,10 @@ PORT = 8000
 transmitter = Transmitter(HOST, PORT)
 
 # Uncomment for starting video capturing
-#cap = cv2.VideoCapture("videoplayback_2.avi")
+cap = cv2.VideoCapture("videoplayback_2.avi")
 
 # starting camera capturing
-cap = cv2.VideoCapture(0)
+#cap = cv2.VideoCapture(0)
 
 def create_mask(img,thickness):
     """Function for creating mask to delete unused areas at frame"""
@@ -119,7 +119,8 @@ while(cap.isOpened()):
         # Convert image's color space to grayscale
         img = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
 
-        
+        ret,img = cv2.threshold(img,50,255,cv2.THRESH_BINARY)
+
         # Apply mask to image
         img = cv2.bitwise_and(img,mask)
 
@@ -184,7 +185,7 @@ while(cap.isOpened()):
                     dist = distance((c1,c2), (points[1][i],points[0][i]))
                     distances.append(dist)
                 percentage = map(np.std(distances),1,48,0,100)
-                print("% {0:0.2f}".format(percentage))
+                #print("% {0:0.2f}".format(percentage))
                 
             except:
                 pass
